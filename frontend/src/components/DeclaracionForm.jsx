@@ -9,8 +9,7 @@ export default function DeclaracionForm({ onDeclaracionCreada }) {
     estado: 'Retenida',
     id_importador: 1,
     id_agente: 1,
-    id_pais: 1,
-    id_contenedor: 1
+    id_pais_origen: 1
   });
 
   const [loading, setLoading] = useState(false);
@@ -43,12 +42,10 @@ export default function DeclaracionForm({ onDeclaracionCreada }) {
         throw new Error(result.message || 'Error al guardar la declaración');
       }
 
-      // Notificar al componente padre para refrescar la lista
       if (onDeclaracionCreada) {
         onDeclaracionCreada();
       }
 
-      // Limpiar el campo del DUA
       setFormData((prev) => ({
         ...prev,
         numero_dua: ''
@@ -112,9 +109,9 @@ export default function DeclaracionForm({ onDeclaracionCreada }) {
             onChange={handleChange}
             style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #94a3b8' }}
           >
-            <option value="Importacion">Importación</option>
-            <option value="Exportacion">Exportación</option>
-            <option value="Transito">Tránsito</option>
+            <option value="Importacion">Importacion</option>
+            <option value="Exportacion">Exportacion</option>
+            <option value="Transito">Transito</option>
           </select>
         </div>
 
