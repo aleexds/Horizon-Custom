@@ -9,11 +9,13 @@ export default function InspeccionesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // En frontend/src/pages/InspeccionesPage.jsx
   const fetchInspecciones = () => {
     fetch('http://localhost:5000/api/inspecciones')
-      .then((res) => {
-        if (!res.ok) throw new Error('Error al conectar con la API de inspecciones');
-        return res.json();
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Error al conectar con la API de inspecciones');
+        return data;
       })
       .then((data) => {
         setInspecciones(data.data || []);

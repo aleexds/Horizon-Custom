@@ -5,15 +5,15 @@ export default function InspeccionesTable({ inspecciones }) {
   }
 
   const getBadgeStyle = (resultado) => {
-    const isAprobado = resultado === 'Aprobada' || resultado === 'Conforme';
+    const isConforme = resultado === 'Conforme';
     return {
       padding: '4px 8px',
       borderRadius: '12px',
       fontSize: '0.8rem',
       fontWeight: 600,
-      backgroundColor: isAprobado ? '#dcfce7' : '#fee2e2',
-      color: isAprobado ? '#166534' : '#991b1b',
-      border: `1px solid ${isAprobado ? '#bbf7d0' : '#fecaca'}`
+      backgroundColor: isConforme ? '#dcfce7' : '#fee2e2',
+      color: isConforme ? '#166534' : '#991b1b',
+      border: `1px solid ${isConforme ? '#bbf7d0' : '#fecaca'}`
     };
   };
 
@@ -25,7 +25,6 @@ export default function InspeccionesTable({ inspecciones }) {
             <th style={{ padding: '12px' }}>ID</th>
             <th style={{ padding: '12px' }}>Nº DUA</th>
             <th style={{ padding: '12px' }}>Fecha</th>
-            <th style={{ padding: '12px' }}>Tipo</th>
             <th style={{ padding: '12px' }}>Funcionario Asignado</th>
             <th style={{ padding: '12px' }}>Resultado</th>
             <th style={{ padding: '12px' }}>Observaciones</th>
@@ -38,10 +37,9 @@ export default function InspeccionesTable({ inspecciones }) {
               <td style={{ padding: '12px', fontWeight: 600, color: '#0369a1' }}>
                 {insp.declaracion?.numero_dua || 'N/A'}
               </td>
-              <td style={{ padding: '12px' }}>{insp.fecha_inspeccion}</td>
-              <td style={{ padding: '12px' }}>{insp.tipo_inspeccion}</td>
+              <td style={{ padding: '12px' }}>{insp.fecha}</td>
               <td style={{ padding: '12px' }}>
-                {insp.funcionario?.nombre ? `${insp.funcionario.nombre} (${insp.funcionario.cargo || 'Inspector'})` : 'Sin asignar'}
+                {insp.funcionario?.nombre ? `${insp.funcionario.nombre} (${insp.funcionario.cargo || 'Funcionario'})` : 'Sin asignar'}
               </td>
               <td style={{ padding: '12px' }}>
                 <span style={getBadgeStyle(insp.resultado)}>

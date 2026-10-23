@@ -2,26 +2,23 @@
 import { supabase } from '../config/supabase.js';
 
 export const InspeccionModel = {
-  // Obtener todas las inspecciones con sus relaciones de DUA y Funcionario
   async getAll() {
     const { data, error } = await supabase
       .from('inspeccion')
       .select(`
         id_inspeccion,
-        fecha_inspeccion,
-        tipo_inspeccion,
+        fecha,
         resultado,
         observaciones,
         declaracion (numero_dua, regimen, estado),
         funcionario (nombre, cargo)
       `)
-      .order('fecha_inspeccion', { ascending: false });
+      .order('fecha', { ascending: false });
 
     if (error) throw error;
     return data;
   },
 
-  // Obtener catálogo de funcionarios para el formulario
   async getFuncionarios() {
     const { data, error } = await supabase
       .from('funcionario')
@@ -32,7 +29,6 @@ export const InspeccionModel = {
     return data;
   },
 
-  // Insertar una nueva inspección
   async create(nuevaInspeccion) {
     const { data, error } = await supabase
       .from('inspeccion')

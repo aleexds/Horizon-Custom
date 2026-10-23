@@ -5,9 +5,8 @@ export default function InspeccionForm({ onInspeccionCreada }) {
   const [formData, setFormData] = useState({
     id_declaracion: '',
     id_funcionario: '',
-    fecha_inspeccion: new Date().toISOString().split('T')[0],
-    tipo_inspeccion: 'Fisica',
-    resultado: 'Aprobada',
+    fecha: new Date().toISOString().split('T')[0],
+    resultado: 'Conforme',
     observaciones: ''
   });
 
@@ -143,28 +142,12 @@ export default function InspeccionForm({ onInspeccionCreada }) {
           </label>
           <input
             type="date"
-            name="fecha_inspeccion"
-            value={formData.fecha_inspeccion}
+            name="fecha"
+            value={formData.fecha}
             onChange={handleChange}
             required
             style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #94a3b8' }}
           />
-        </div>
-
-        <div>
-          <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
-            Tipo de Aforo:
-          </label>
-          <select
-            name="tipo_inspeccion"
-            value={formData.tipo_inspeccion}
-            onChange={handleChange}
-            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #94a3b8' }}
-          >
-            <option value="Fisica">Física</option>
-            <option value="Documental">Documental</option>
-            <option value="No Intrusiva">No Intrusiva (Escáner)</option>
-          </select>
         </div>
 
         <div>
@@ -177,9 +160,9 @@ export default function InspeccionForm({ onInspeccionCreada }) {
             onChange={handleChange}
             style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #94a3b8' }}
           >
-            <option value="Aprobada">Aprobada</option>
-            <option value="Rechazada">Rechazada</option>
-            <option value="Pendiente">Pendiente</option>
+            <option value="Conforme">Conforme</option>
+            <option value="Con observaciones">Con observaciones</option>
+            <option value="No Conforme">No Conforme</option>
           </select>
         </div>
 
