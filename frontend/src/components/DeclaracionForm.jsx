@@ -1,5 +1,5 @@
 // frontend/src/components/DeclaracionForm.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function DeclaracionForm({ onDeclaracionCreada }) {
   const [formData, setFormData] = useState({
@@ -7,13 +7,39 @@ export default function DeclaracionForm({ onDeclaracionCreada }) {
     fecha: new Date().toISOString().split('T')[0],
     regimen: 'Importacion',
     estado: 'Retenida',
-    id_importador: 1,
+    id_importador: '',
     id_agente: 1,
-    id_pais_origen: 1
+    id_pais_origen: ''
   });
 
+  const [catalogos, setCatalogos] = useState({ importadores: [], paises: [] });
+  const [loadingCatalogos, setLoadingCatalogos] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Cargar importadores y países desde la API
+  useEffect(() => {
+    fetch('http://localhost:5000/api/catalogos')
+      .then((res) => {
+        if (!res.ok) throw new Error('Error al cargar catálogos');
+        return res.json();
+      })
+      .then((resData) => {
+        const { importadores, paises } = resData.data;
+        setCatalogos({ importadores, paises });
+        // Fijar el primer elemento disponible por defecto
+        setFormData((prev) => ({
+          ...prev,
+          id_importador: importadores[0]?.id_importador || '',
+          id_pais_origen: paises[0]?.id_pais || ''
+        }));
+        setLoadingCatalogos(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoadingCatalogos(false);
+      });
+  }, []);
 
   const handleChange = (e) => {
     setFormData({
@@ -77,7 +103,7 @@ export default function DeclaracionForm({ onDeclaracionCreada }) {
           <input
             type="text"
             name="numero_dua"
-            placeholder="Ej: DUA-2026-0003"
+            placeholder="Ej: DUA-2026-0004"
             value={formData.numero_dua}
             onChange={handleChange}
             required
@@ -101,6 +127,46 @@ export default function DeclaracionForm({ onDeclaracionCreada }) {
 
         <div>
           <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
+            Importador:
+          </label>
+          <select
+            name="id_importador"
+            value={formData.id_importador}
+            onChange={handleChange}
+            disabled={loadingCatalogos}
+            required
+            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #94a3b8' }}
+          >
+            {catalogos.importadores.map((imp) => (
+              <option key={imp.id_importador} value={imp.id_importador}>
+                {imp.nombre_razon_social}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
+            País de Origen:
+          </label>
+          <select
+            name="id_pais_origen"
+            value={formData.id_pais_origen}
+            onChange={handleChange}
+            disabled={loadingCatalogos}
+            required
+            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #94a3b8' }}
+          >
+            {catalogos.paises.map((p) => (
+              <option key={p.id_pais} value={p.id_pais}>
+                {p.nombre} ({p.codigo_iso})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
             Régimen:
           </label>
           <select
@@ -109,9 +175,9 @@ export default function DeclaracionForm({ onDeclaracionCreada }) {
             onChange={handleChange}
             style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #94a3b8' }}
           >
-            <option value="Importacion">Importacion</option>
-            <option value="Exportacion">Exportacion</option>
-            <option value="Transito">Transito</option>
+            <option value="Importacion">Importación</option>
+            <option value="Exportacion">Exportación</option>
+            <option value="Transito">Tránsito</option>
           </select>
         </div>
 
@@ -133,7 +199,7 @@ export default function DeclaracionForm({ onDeclaracionCreada }) {
         <div>
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || loadingCatalogos}
             style={{
               width: '100%',
               padding: '9px 16px',
@@ -142,7 +208,7 @@ export default function DeclaracionForm({ onDeclaracionCreada }) {
               border: 'none',
               borderRadius: '4px',
               fontWeight: 600,
-              cursor: loading ? 'not-allowed' : 'pointer'
+              cursor: loading || loadingCatalogos ? 'not-allowed' : 'pointer'
             }}
           >
             {loading ? 'Guardando...' : 'Registrar DUA'}
