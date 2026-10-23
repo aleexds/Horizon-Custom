@@ -99,3 +99,51 @@ export const updateEstadoDeclaracion = async (req, res) => {
     });
   }
 };
+
+// Añadir al final de backend/src/controllers/declaracionController.js
+export const getCatalogosInventario = async (req, res) => {
+  try {
+    const catalogos = await DeclaracionModel.getBodegasYProductos();
+    res.status(200).json({ success: true, data: catalogos });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error al obtener bodegas y productos', error: error.message });
+  }
+};
+
+export const createRetenido = async (req, res) => {
+  try {
+    const { id_bodega, id_producto, cantidad, fecha_ingreso, estado } = req.body;
+
+    if (!id_bodega || !id_producto || !cantidad) {
+      return res.status(400).json({ success: false, message: 'Faltan campos obligatorios' });
+    }
+
+    const nuevoItem = await DeclaracionModel.createInventarioRetenido({
+      id_bodega: Number(id_bodega),
+      id_producto: Number(id_producto),
+      cantidad: Number(cantidad),
+      fecha_ingreso: fecha_ingreso || new Date().toISOString().split('T')[0],
+      estado: estado || 'Retenido'
+    });
+
+    res.status(201).json({ success: true, data: nuevoItem });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message || 'Error al registrar retención' });
+  }
+};
+
+export const updateEstadoInventario = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { estado } = req.body;
+
+    if (!estado) {
+      return res.status(400).json({ success: false, message: 'El campo estado es requerido' });
+    }
+
+    const itemActualizado = await DeclaracionModel.updateEstadoInventario(id, estado);
+    res.status(200).json({ success: true, data: itemActualizado });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message || 'Error al actualizar inventario' });
+  }
+};
