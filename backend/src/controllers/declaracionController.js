@@ -112,22 +112,27 @@ export const getCatalogosInventario = async (req, res) => {
 
 export const createRetenido = async (req, res) => {
   try {
-    const { id_bodega, id_producto, cantidad, fecha_ingreso, estado } = req.body;
+    const { id_bodega, descripcion_producto, cantidad, valor_unitario, fecha_ingreso, estado } = req.body;
 
-    if (!id_bodega || !id_producto || !cantidad) {
-      return res.status(400).json({ success: false, message: 'Faltan campos obligatorios' });
+    if (!id_bodega || !descripcion_producto || !cantidad) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Faltan campos obligatorios (id_bodega, descripcion_producto, cantidad)' 
+      });
     }
 
     const nuevoItem = await DeclaracionModel.createInventarioRetenido({
       id_bodega: Number(id_bodega),
-      id_producto: Number(id_producto),
+      descripcion_producto,
       cantidad: Number(cantidad),
+      valor_unitario: Number(valor_unitario) || 0.00,
       fecha_ingreso: fecha_ingreso || new Date().toISOString().split('T')[0],
       estado: estado || 'Retenido'
     });
 
     res.status(201).json({ success: true, data: nuevoItem });
   } catch (error) {
+    console.error('Error al registrar retención:', error);
     res.status(500).json({ success: false, message: error.message || 'Error al registrar retención' });
   }
 };

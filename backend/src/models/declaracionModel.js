@@ -85,7 +85,6 @@ export const DeclaracionModel = {
     return data[0];
   },
 
-  // Obtener catálogos para retención
   async getBodegasYProductos() {
     const [bodegas, productos] = await Promise.all([
       supabase.from('bodega').select('id_bodega, nombre, ubicacion').order('nombre'),
@@ -98,18 +97,77 @@ export const DeclaracionModel = {
     return { bodegas: bodegas.data, productos: productos.data };
   },
 
-  // Registrar mercancía en bodega
-  async createInventarioRetenido(nuevoItem) {
+  async createInventarioRetenido({ id_bodega, descripcion_producto, cantidad, valor_unitario, fecha_ingreso, estado }) {
+    const descripcionLimpia = descripcion_producto.trim();
+    const precio = Number(valor_unitario) || 0.00;
+
+    // 1. Verificar si el producto ya existe
+    const { data: productosEncontrados, error: searchError } = await supabase
+      .from('producto')
+      .select('id_producto, valor_unitario')
+      .ilike('descripcion', descripcionLimpia)
+      .limit(1);
+
+    if (searchError) throw searchError;
+
+    let id_producto = productosEncontrados && productosEncontrados.length > 0 
+      ? productosEncontrados[0].id_producto 
+      : null;
+
+    // 2. Si no existe, tomar la categoría por defecto e insertarlo
+    if (!id_producto) {
+      const { data: categorias, error: catError } = await supabase
+        .from('categoria_arancelaria')
+        .select('id_categoria')
+        .limit(1);
+
+      if (catError) throw catError;
+      
+      const idCategoriaDefault = categorias && categorias.length > 0 
+        ? categorias[0].id_categoria 
+        : 1;
+
+      const { data: nuevoProducto, error: prodError } = await supabase
+        .from('producto')
+        .insert([{
+          descripcion: descripcionLimpia,
+          valor_unitario: precio,
+          id_categoria: idCategoriaDefault
+        }])
+        .select('id_producto');
+
+      if (prodError) throw prodError;
+      id_producto = nuevoProducto[0].id_producto;
+    } else if (productosEncontrados[0].valor_unitario === 0 && precio > 0) {
+      await supabase
+        .from('producto')
+        .update({ valor_unitario: precio })
+        .eq('id_producto', id_producto);
+    }
+
+    // 3. Insertar el registro en inventario_bodega
     const { data, error } = await supabase
       .from('inventario_bodega')
-      .insert([nuevoItem])
-      .select();
+      .insert([{
+        id_bodega,
+        id_producto,
+        cantidad,
+        fecha_ingreso,
+        estado
+      }])
+      .select(`
+        id_inventario,
+        cantidad,
+        fecha_ingreso,
+        estado,
+        bodega (id_bodega, nombre, ubicacion),
+        producto (id_producto, descripcion, valor_unitario)
+      `);
 
     if (error) throw error;
     return data[0];
   },
 
-  // Cambiar estado en inventario (Liberar lote de bodega)
   async updateEstadoInventario(id, nuevoEstado) {
     const { data, error } = await supabase
       .from('inventario_bodega')
