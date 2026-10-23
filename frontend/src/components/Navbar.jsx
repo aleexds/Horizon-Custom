@@ -4,26 +4,27 @@ import { Link } from 'react-router-dom';
 export default function Navbar() {
   return (
     <header style={{
-      backgroundColor: '#0f172a',
-      color: '#f8fafc',
+      backgroundColor: '#0a192f',
       padding: '1rem 2rem',
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      borderBottom: '2px solid #334155'
+      color: 'white',
+      borderBottom: '3px solid #0284c7'
     }}>
       <div>
-        <h1 style={{ margin: 0, fontSize: '1.4rem', letterSpacing: '0.5px' }}>
-          Horizon Aduanas
-        </h1>
-        <small style={{ color: '#94a3b8' }}>Sistema de Gestión y Control Aduanero</small>
+        <h1 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700 }}>Horizon Aduanas</h1>
+        <small style={{ color: '#94a3b8', fontSize: '0.75rem' }}>Sistema de Gestión y Control Aduanero</small>
       </div>
 
-      <nav style={{ display: 'flex', gap: '1.2rem' }}>
-        <Link to="/" style={{ color: '#38bdf8', textDecoration: 'none', fontWeight: 500 }}>
+      <nav style={{ display: 'flex', gap: '1.5rem' }}>
+        <Link to="/" style={{ color: '#38bdf8', textDecoration: 'none', fontWeight: 600 }}>
           Declaraciones (DUA)
         </Link>
-        <Link to="/retenidos" style={{ color: '#38bdf8', textDecoration: 'none', fontWeight: 500 }}>
+        <Link to="/inspecciones" style={{ color: '#38bdf8', textDecoration: 'none', fontWeight: 600 }}>
+          Inspecciones
+        </Link>
+        <Link to="/retenidos" style={{ color: '#38bdf8', textDecoration: 'none', fontWeight: 600 }}>
           Mercancía Retenida
         </Link>
       </nav>
