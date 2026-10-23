@@ -29,21 +29,44 @@ export default function DeclaracionesPage() {
     fetchDeclaraciones();
   }, []);
 
+  const handleCambiarEstado = async (id_declaracion, nuevoEstado) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/declaraciones/${id_declaracion}/estado`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ estado: nuevoEstado })
+      });
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || 'Error al cambiar estado');
+
+      // Actualizar listado
+      fetchDeclaraciones();
+    } catch (err) {
+      alert(`Error al actualizar estado: ${err.message}`);
+    }
+  };
+
   return (
     <div>
       <Navbar />
       <main style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
         <h2>Control de Declaraciones Aduaneras (DUA)</h2>
-        <p style={{ color: '#64748b' }}>
-          Gestión y registro de trámites aduaneros en Horizon Aduanas.
-        </p>
+        <p style={{ color: '#64748b' }}>Gestión y registro de trámites aduaneros en Horizon Aduanas.</p>
 
-        {/* Componente de formulario de inserción */}
+        {/* Formulario para registrar DUA */}
         <DeclaracionForm onDeclaracionCreada={fetchDeclaraciones} />
 
         {loading && <p>Cargando declaraciones...</p>}
         {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-        {!loading && !error && <DeclaracionesTable declaraciones={declaraciones} />}
+        {!loading && !error && (
+          <DeclaracionesTable 
+            declaraciones={declaraciones} 
+            onCambiarEstado={handleCambiarEstado} 
+          />
+        )}
       </main>
     </div>
   );
