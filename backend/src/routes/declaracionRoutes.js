@@ -1,13 +1,18 @@
 // backend/src/routes/declaracionRoutes.js
 import { Router } from 'express';
-import { getDeclaraciones, getRetenidos } from '../controllers/declaracionController.js';
+import {
+  getDeclaraciones,
+  getRetenidos,
+  createDeclaracion
+} from '../controllers/declaracionController.js';
 
 const router = Router();
 
-// Endpoint para obtener todas las declaraciones aduaneras
+// Rutas GET existentes
 router.get('/declaraciones', getDeclaraciones);
-
-// Endpoint para consultar inventario retenido en bodegas
 router.get('/inventario/retenidos', getRetenidos);
+
+// Nueva ruta POST para registrar declaraciones
+router.post('/declaraciones', createDeclaracion);
 
 export default router;

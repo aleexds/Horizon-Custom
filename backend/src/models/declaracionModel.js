@@ -43,5 +43,16 @@ export const DeclaracionModel = {
 
     if (error) throw error;
     return data;
+  },
+
+  // Insertar una nueva declaración
+  async create(nuevaDeclaracion) {
+    const { data, error } = await supabase
+      .from('declaracion')
+      .insert([nuevaDeclaracion])
+      .select();
+
+    if (error) throw error;
+    return data[0];
   }
 };
