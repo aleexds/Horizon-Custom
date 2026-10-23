@@ -6,10 +6,10 @@ export const getInspecciones = async (req, res) => {
     const inspecciones = await InspeccionModel.getAll();
     res.status(200).json({ success: true, data: inspecciones });
   } catch (error) {
+    console.error('Error al consultar inspecciones en Supabase:', error);
     res.status(500).json({ 
       success: false, 
-      message: 'Error al obtener inspecciones', 
-      error: error.message 
+      message: error.message || 'Error al obtener inspecciones' 
     });
   }
 };
@@ -19,10 +19,10 @@ export const getFuncionarios = async (req, res) => {
     const funcionarios = await InspeccionModel.getFuncionarios();
     res.status(200).json({ success: true, data: funcionarios });
   } catch (error) {
+    console.error('Error al consultar funcionarios en Supabase:', error);
     res.status(500).json({ 
       success: false, 
-      message: 'Error al obtener funcionarios', 
-      error: error.message 
+      message: error.message || 'Error al obtener funcionarios' 
     });
   }
 };
@@ -32,24 +32,22 @@ export const createInspeccion = async (req, res) => {
     const { 
       id_declaracion, 
       id_funcionario, 
-      fecha_inspeccion, 
-      tipo_inspeccion, 
+      fecha, 
       resultado, 
       observaciones 
     } = req.body;
 
-    if (!id_declaracion || !id_funcionario || !tipo_inspeccion || !resultado) {
+    if (!id_declaracion || !id_funcionario || !resultado) {
       return res.status(400).json({
         success: false,
-        message: 'Faltan campos obligatorios (id_declaracion, id_funcionario, tipo_inspeccion, resultado)'
+        message: 'Faltan campos obligatorios (id_declaracion, id_funcionario, resultado)'
       });
     }
 
     const nuevaInspeccion = await InspeccionModel.create({
       id_declaracion: Number(id_declaracion),
       id_funcionario: Number(id_funcionario),
-      fecha_inspeccion: fecha_inspeccion || new Date().toISOString().split('T')[0],
-      tipo_inspeccion,
+      fecha: fecha || new Date().toISOString().split('T')[0],
       resultado,
       observaciones: observaciones || ''
     });
