@@ -20,7 +20,8 @@ export const DeclaracionModel = {
           valor_declarado,
           producto (descripcion, valor_unitario)
         )
-      `);
+      `)
+      .order('id_declaracion', { ascending: false });
 
     if (error) throw error;
     return data;
@@ -53,7 +54,6 @@ export const DeclaracionModel = {
     return data[0];
   },
 
-  // Obtener catálogo de importadores
   async getImportadores() {
     const { data, error } = await supabase
       .from('importador')
@@ -64,7 +64,6 @@ export const DeclaracionModel = {
     return data;
   },
 
-  // Obtener catálogo de países
   async getPaises() {
     const { data, error } = await supabase
       .from('pais')
@@ -73,5 +72,16 @@ export const DeclaracionModel = {
 
     if (error) throw error;
     return data;
+  },
+
+  async updateEstado(id, nuevoEstado) {
+    const { data, error } = await supabase
+      .from('declaracion')
+      .update({ estado: nuevoEstado })
+      .eq('id_declaracion', id)
+      .select();
+
+    if (error) throw error;
+    return data[0];
   }
 };

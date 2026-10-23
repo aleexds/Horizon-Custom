@@ -70,3 +70,32 @@ export const getCatalogos = async (req, res) => {
     });
   }
 };
+
+// Agrega esta función al final de backend/src/controllers/declaracionController.js
+export const updateEstadoDeclaracion = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { estado } = req.body;
+
+    if (!estado) {
+      return res.status(400).json({
+        success: false,
+        message: 'El campo estado es requerido'
+      });
+    }
+
+    const declaracionActualizada = await DeclaracionModel.updateEstado(id, estado);
+
+    res.status(200).json({
+      success: true,
+      message: 'Estado actualizado correctamente',
+      data: declaracionActualizada
+    });
+  } catch (error) {
+    console.error('Error al actualizar estado:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error al actualizar el estado de la declaración'
+    });
+  }
+};
