@@ -35,10 +35,10 @@ export const DeclaracionModel = {
         cantidad,
         fecha_ingreso,
         estado,
-        bodega (nombre, ubicacion),
-        producto (descripcion, valor_unitario)
+        bodega (id_bodega, nombre, ubicacion),
+        producto (id_producto, descripcion, valor_unitario)
       `)
-      .eq('estado', 'Retenido');
+      .order('id_inventario', { ascending: false });
 
     if (error) throw error;
     return data;
@@ -79,6 +79,42 @@ export const DeclaracionModel = {
       .from('declaracion')
       .update({ estado: nuevoEstado })
       .eq('id_declaracion', id)
+      .select();
+
+    if (error) throw error;
+    return data[0];
+  },
+
+  // Obtener catálogos para retención
+  async getBodegasYProductos() {
+    const [bodegas, productos] = await Promise.all([
+      supabase.from('bodega').select('id_bodega, nombre, ubicacion').order('nombre'),
+      supabase.from('producto').select('id_producto, descripcion, valor_unitario').order('descripcion')
+    ]);
+
+    if (bodegas.error) throw bodegas.error;
+    if (productos.error) throw productos.error;
+
+    return { bodegas: bodegas.data, productos: productos.data };
+  },
+
+  // Registrar mercancía en bodega
+  async createInventarioRetenido(nuevoItem) {
+    const { data, error } = await supabase
+      .from('inventario_bodega')
+      .insert([nuevoItem])
+      .select();
+
+    if (error) throw error;
+    return data[0];
+  },
+
+  // Cambiar estado en inventario (Liberar lote de bodega)
+  async updateEstadoInventario(id, nuevoEstado) {
+    const { data, error } = await supabase
+      .from('inventario_bodega')
+      .update({ estado: nuevoEstado })
+      .eq('id_inventario', id)
       .select();
 
     if (error) throw error;
