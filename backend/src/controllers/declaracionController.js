@@ -49,3 +49,24 @@ export const createDeclaracion = async (req, res) => {
     });
   }
 };
+
+// Agrega estas dos funciones al final de backend/src/controllers/declaracionController.js
+export const getCatalogos = async (req, res) => {
+  try {
+    const [importadores, paises] = await Promise.all([
+      DeclaracionModel.getImportadores(),
+      DeclaracionModel.getPaises()
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: { importadores, paises }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener catálogos',
+      error: error.message
+    });
+  }
+};

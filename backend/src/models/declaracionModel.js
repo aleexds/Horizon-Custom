@@ -2,7 +2,6 @@
 import { supabase } from '../config/supabase.js';
 
 export const DeclaracionModel = {
-  // Obtener todas las declaraciones con sus relaciones
   async getAll() {
     const { data, error } = await supabase
       .from('declaracion')
@@ -27,7 +26,6 @@ export const DeclaracionModel = {
     return data;
   },
 
-  // Obtener inventario retenido en bodegas
   async getRetenidos() {
     const { data, error } = await supabase
       .from('inventario_bodega')
@@ -45,7 +43,6 @@ export const DeclaracionModel = {
     return data;
   },
 
-  // Insertar una nueva declaración
   async create(nuevaDeclaracion) {
     const { data, error } = await supabase
       .from('declaracion')
@@ -54,5 +51,27 @@ export const DeclaracionModel = {
 
     if (error) throw error;
     return data[0];
+  },
+
+  // Obtener catálogo de importadores
+  async getImportadores() {
+    const { data, error } = await supabase
+      .from('importador')
+      .select('id_importador, nombre_razon_social')
+      .order('nombre_razon_social', { ascending: true });
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Obtener catálogo de países
+  async getPaises() {
+    const { data, error } = await supabase
+      .from('pais')
+      .select('id_pais, nombre, codigo_iso')
+      .order('nombre', { ascending: true });
+
+    if (error) throw error;
+    return data;
   }
 };
